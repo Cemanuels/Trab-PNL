@@ -1,24 +1,21 @@
 from sympy import *
-def armijo(eta, function):
+
+def armijo(function, eta = 0.7, x_in = [0,0]):
 	x1, x2 = symbols('x1 x2')
 	variables = [x1, x2]
 
 	# Gradiente
 	grad_function = lambdify((x1, x2), derive_by_array(function ,(x1, x2)))
-	# acessar
-	# func_result = function.subs(list(zip(variables, x_in))) [(x1, value), (x2, value)] - return value
-	# grad_result = grad_function(x_in[0], x_in[1]) (value, value) - reuturn list
 	# tamanho do passo inicial
 	t = 1
 	# Ponto inicial
-	x_in = Matrix([0, 0])
-	# Direcao de descida, que é -gradiente(x_in)
-	d = -1 * Matrix(grad_function(x_in[0], x_in[1]))
-
+	x = Matrix(x_in)
+	# Direcao de descida = -gradiente(x)
+	d = -1 * Matrix(grad_function(x[0], x[1]))
 	while True:
-	    if function.subs(list(zip(variables, x_in + t * d))) < function.subs(list(zip(variables, x_in))) + eta * t * Matrix(grad_function(x_in[0], x_in[1])).dot(d):
-	        print(f"Tamanho do passo: {t}")
-	        break
+	    if function.subs(list(zip(variables, x + t * d))) <=\
+     		 		function.subs(list(zip(variables, x))) + \
+       				eta * t * Matrix(grad_function(x[0], x[1])).dot(d):
+	        return t
 	    else:
 	        t *= eta
-	return t
